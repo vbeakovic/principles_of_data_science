@@ -11,5 +11,11 @@ advertising_long <- melt(data = advertising[,2:5], id.vars = "Sales",
 gg <- ggplot(data = advertising_long, aes(x = ad_qty, y = Sales, group=ad_category)) + 
         geom_point() + 
         geom_smooth(method = "lm") + 
-        facet_wrap(facets = "ad_category", scales = "free")
+        facet_wrap(facets = "ad_category", scales = "free_x") + 
+        theme(
+                strip.placement = "outside",
+                strip.background = element_blank(),
+                strip.text = element_text(face = "bold")
+        ) +
+        xlab("Number of ads") 
 gg
