@@ -51,6 +51,11 @@ if (X + Y == 15.3) {
         print("True!")
 }
 
+my_list <- list(1L, 5.7, TRUE, "apples")
+length(my_list) # four objects in the list
+my_list[[1]] == 1
+my_list[[2]] == 5.7
+
 advertising <- read.csv("./data/Advertising.csv")
 advertising_long <- melt(data = advertising[,2:5], id.vars = "Sales", 
                          measure.vars = c("TV", "Radio", "Newspaper"), 
