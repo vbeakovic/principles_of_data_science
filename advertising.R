@@ -1,3 +1,4 @@
+library(stringr)
 library(ggplot2)
 library(reshape2)
 library(dplyr)
@@ -55,6 +56,18 @@ my_list <- list(1L, 5.7, TRUE, "apples")
 length(my_list) # four objects in the list
 my_list[[1]] == 1
 my_list[[2]] == 5.7
+
+#### Parsing a tweet ####
+tweet <- "RT @j_o_n_dnger: $TWTR now top holding for 
+             Andor, unseating $AAPL"
+words_in_tweet <- strsplit(tweet, split = " ", fixed = TRUE)[[1]]
+
+for(i in seq_along(words_in_tweet)) {
+        if (grepl("$", words_in_tweet[i], fixed = TRUE) == TRUE) {
+                print(paste("THIS TWEET IS ABOUT ", words_in_tweet[i]))  # alert the user
+        }
+}
+
 
 advertising <- read.csv("./data/Advertising.csv")
 advertising_long <- melt(data = advertising[,2:5], id.vars = "Sales", 
