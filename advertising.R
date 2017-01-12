@@ -4,6 +4,8 @@ library(reshape2)
 library(dplyr)
 library(gridExtra)
 library(ggthemes)
+library(RCurl)
+library(XML)
 #### Data types ####
 # Integer
 a <- c(3L, 6L, 99L, -34L, 34L, 11111111L)
@@ -68,7 +70,7 @@ for(i in seq_along(words_in_tweet)) {
         }
 }
 
-
+#### Marketing Dollars ####
 advertising <- read.csv("./data/Advertising.csv")
 advertising_long <- melt(data = advertising[,2:5], id.vars = "Sales", 
                          measure.vars = c("TV", "Radio", "Newspaper"), 
@@ -117,3 +119,15 @@ gg_tv <- ggplot(data = advertising_long_tv, aes(x = ad_qty, y = Sales)) +
         ylab(NULL)
 gg_tv
 grid.arrange(gg_tv, gg_radio, gg_newspaper, ncol = 3, left = "Sales")
+
+#### What's in a job description ####
+texts <- vector("list", 100)
+
+pathPaging <- "//span[@class='summary']"
+
+for(i in seq(0,1000, by = 10)) {
+        pageUrl = paste0("https://www.indeed.com/jobs?q=data+scientist&start=", as.character(i))
+        page = getURL(pageUrl)
+        page_parsed <- htmlParse(page)
+        texts[[i/10+1]] <- xpathSApply(doc = page_parsed, path = pathPaging, fun = xmlValue)
+}
