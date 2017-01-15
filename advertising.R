@@ -131,3 +131,4 @@ for(i in seq(0,1000, by = 10)) {
         page_parsed <- htmlParse(page)
         texts[[i/10+1]] <- xpathSApply(doc = page_parsed, path = pathPaging, fun = xmlValue)
 }
+save(texts, file = "./data/texts.Rdata")
