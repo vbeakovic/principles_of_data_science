@@ -1,4 +1,5 @@
 library(stringr)
+library(slam)
 library(ggplot2)
 library(reshape2)
 library(dplyr)
@@ -6,6 +7,10 @@ library(gridExtra)
 library(ggthemes)
 library(RCurl)
 library(XML)
+library(tm)
+library(RWeka)
+library(parallel)
+options(mc.cores=2)
 #### Data types ####
 # Integer
 a <- c(3L, 6L, 99L, -34L, 34L, 11111111L)
@@ -121,7 +126,8 @@ gg_tv
 grid.arrange(gg_tv, gg_radio, gg_newspaper, ncol = 3, left = "Sales")
 
 #### What's in a job description ####
-texts <- vector("list", 100)
+
+texts <- character()
 
 pathPaging <- "//span[@class='summary']"
 
@@ -129,6 +135,50 @@ for(i in seq(0,1000, by = 10)) {
         pageUrl = paste0("https://www.indeed.com/jobs?q=data+scientist&start=", as.character(i))
         page = getURL(pageUrl)
         page_parsed <- htmlParse(page)
-        texts[[i/10+1]] <- xpathSApply(doc = page_parsed, path = pathPaging, fun = xmlValue)
+        #texts[[i/10+1]] <- xpathSApply(doc = page_parsed, path = pathPaging, fun = xmlValue)
+        texts <- c(texts, xpathSApply(doc = page_parsed, path = pathPaging, fun = xmlValue))
 }
-save(texts, file = "./data/texts.Rdata")
+texts <- gsub("\n", "", texts, fixed = TRUE)
+save(texts, file = "./data/texts2.Rdata")
+# Analysis
+load(file = "./data/texts2.Rdata")
+
+
+corpus = Corpus(VectorSource(texts))
+corpus <- tm_map(corpus, tolower)
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, stripWhitespace)
+corpus <- tm_map(corpus, removeWords, stopwords("english"))
+corpus <- tm_map(corpus, PlainTextDocument)
+
+
+
+# unigrams
+uni_grams <- function(x) {
+        RWeka::NGramTokenizer(x, RWeka::Weka_control(min =1, max = 1))
+}
+Sys.time()
+dtm_corpus_unigrams <- DocumentTermMatrix(corpus, list(tokenize = uni_grams))
+Sys.time()
+freq <- sort(col_sums(dtm_corpus_unigrams, na.rm = T))
+dtm_corpus_unigrams <- data.frame(word = names(freq), freq = freq)
+dtm_corpus_unigrams <- filter(dtm_corpus_unigram, freq > 1)
+save(dtm_corpus_unigrams, file = "./data/dtm_corpus_unigrams.Rdata")
+
+
+# bigrams
+bi_grams <- function(x) {
+        RWeka::NGramTokenizer(x, RWeka::Weka_control(min =2, max = 2))
+}
+Sys.time()
+dtm_corpus_bigrams <- DocumentTermMatrix(corpus, list(tokenize = bi_grams))
+Sys.time()
+freq <- sort(col_sums(dtm_corpus_bigrams, na.rm = T))
+dtm_corpus_bigrams <- data.frame(word = names(freq), freq = freq)
+dtm_corpus_bigrams <- filter(dtm_corpus_bigrams, freq > 1)
+save(dtm_corpus_bigrams, file = "./data/dtm_corpus_bigrams.Rdata")
+
+# join unigrams & bigrams
+frequent_phrases <- rbind(dtm_corpus_unigrams, dtm_corpus_bigrams)
+frequent_phrases <- arrange(frequent_phrases, desc(freq))
