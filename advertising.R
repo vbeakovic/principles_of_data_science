@@ -1,3 +1,4 @@
+#### Libraries ####
 library(stringr)
 library(slam)
 library(ggplot2)
@@ -10,7 +11,12 @@ library(XML)
 library(tm)
 library(RWeka)
 library(parallel)
-options(mc.cores=2)
+library(tidytext)
+
+#### Data ####
+data("stop_words")
+
+options(mc.cores = 2)
 #### Data types ####
 # Integer
 a <- c(3L, 6L, 99L, -34L, 34L, 11111111L)
@@ -143,42 +149,27 @@ save(texts, file = "./data/texts2.Rdata")
 # Analysis
 load(file = "./data/texts2.Rdata")
 
+# data frame with texts
+texts_df <- data_frame(
+        ad = 1:length(texts),
+        text = texts
+)
 
-corpus = Corpus(VectorSource(texts))
-corpus <- tm_map(corpus, tolower)
-corpus <- tm_map(corpus, removeNumbers)
-corpus <- tm_map(corpus, removePunctuation)
-corpus <- tm_map(corpus, stripWhitespace)
-corpus <- tm_map(corpus, removeWords, stopwords("english"))
-corpus <- tm_map(corpus, PlainTextDocument)
+texts_df_uni <- texts_df %>% 
+        unnest_tokens(tokens, text) %>% 
+        group_by(tokens) %>% 
+        summarise(freq = n()) %>% 
+        arrange(desc(freq))
 
+texts_df_bi <- texts_df %>% 
+        unnest_tokens(tokens, text, token = "ngrams", n = 2) %>% 
+        group_by(tokens) %>% 
+        summarise(freq = n()) %>% 
+        arrange(desc(freq))
 
-
-# unigrams
-uni_grams <- function(x) {
-        RWeka::NGramTokenizer(x, RWeka::Weka_control(min =1, max = 1))
-}
-Sys.time()
-dtm_corpus_unigrams <- DocumentTermMatrix(corpus, list(tokenize = uni_grams))
-Sys.time()
-freq <- sort(col_sums(dtm_corpus_unigrams, na.rm = T))
-dtm_corpus_unigrams <- data.frame(word = names(freq), freq = freq)
-dtm_corpus_unigrams <- filter(dtm_corpus_unigram, freq > 1)
-save(dtm_corpus_unigrams, file = "./data/dtm_corpus_unigrams.Rdata")
-
-
-# bigrams
-bi_grams <- function(x) {
-        RWeka::NGramTokenizer(x, RWeka::Weka_control(min =2, max = 2))
-}
-Sys.time()
-dtm_corpus_bigrams <- DocumentTermMatrix(corpus, list(tokenize = bi_grams))
-Sys.time()
-freq <- sort(col_sums(dtm_corpus_bigrams, na.rm = T))
-dtm_corpus_bigrams <- data.frame(word = names(freq), freq = freq)
-dtm_corpus_bigrams <- filter(dtm_corpus_bigrams, freq > 1)
-save(dtm_corpus_bigrams, file = "./data/dtm_corpus_bigrams.Rdata")
 
 # join unigrams & bigrams
-frequent_phrases <- rbind(dtm_corpus_unigrams, dtm_corpus_bigrams)
-frequent_phrases <- arrange(frequent_phrases, desc(freq))
+frequent_phrases <- rbind(texts_df_uni, texts_df_bi) %>% 
+        anti_join(stop_words, by = c("tokens" = "word")) %>% 
+        arrange(desc(freq))
+
