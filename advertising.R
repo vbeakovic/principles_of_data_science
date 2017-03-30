@@ -12,6 +12,7 @@ library(tm)
 library(RWeka)
 library(parallel)
 library(tidytext)
+library(purrr)
 
 #### Data ####
 data("stop_words")
@@ -75,11 +76,11 @@ tweet <- "RT @j_o_n_dnger: $TWTR now top holding for
              Andor, unseating $AAPL"
 words_in_tweet <- strsplit(tweet, split = " ", fixed = TRUE)[[1]]
 
-for(i in seq_along(words_in_tweet)) {
-        if (grepl("$", words_in_tweet[i], fixed = TRUE) == TRUE) {
-                print(paste("THIS TWEET IS ABOUT ", words_in_tweet[i]))  # alert the user
-        }
-}
+walk(words_in_tweet, function(x) {
+        if (grepl("$", x, fixed = TRUE) == TRUE) {
+                print(paste("THIS TWEET IS ABOUT ", x))  # alert the user
+        }     
+})
 
 #### Marketing Dollars ####
 advertising <- read.csv("./data/Advertising.csv")
