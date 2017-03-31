@@ -2,6 +2,8 @@ library(tidytext)
 library(dplyr)
 library(stringr)
 library(tidyr)
+library(readr)
+library(RCurl)
 
 #### Tweet analysis ###
 tweet <- "This Wednesday morn , are you early to rise? Then look East. The Crescent Moon joins Venus
@@ -39,3 +41,11 @@ tweet_tokenized <- bind_rows(
 
 tweet_tokenized$relative_length <- nchar(tweet) / 30
 tweet_tokenized$topic <- "astronomy"
+
+#### World alcohol consumption data ###
+drinks <- read_csv("https://raw.githubusercontent.com/sinanuozdemir/principles_of_data_science/master/data/chapter_2/drinks.csv")
+drinks <- drinks %>% mutate_if(is.character, as.factor)
+# countries
+drinks %>% select(continent) %>% 
+        summarise(count = n(), 
+                  )
