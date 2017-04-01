@@ -46,6 +46,15 @@ tweet_tokenized$topic <- "astronomy"
 drinks <- read_csv("https://raw.githubusercontent.com/sinanuozdemir/principles_of_data_science/master/data/chapter_2/drinks.csv")
 drinks <- drinks %>% mutate_if(is.character, as.factor)
 # countries
-drinks %>% select(continent) %>% 
+drinks %>% 
         summarise(count = n(), 
+                  uni = length(unique(levels(continent))), 
+                  top = names(table(drinks$continent)[1]),
+                  freq = table(drinks$continent)[1]
                   )
+# beer servings
+summary(drinks$beer_servings)
+drinks %>% summarise(mean = mean(beer_servings), 
+                     min = min(beer_servings), 
+                     max = max(beer_servings)
+                     )
