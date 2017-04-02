@@ -57,13 +57,13 @@ summary(drinks$beer_servings)
 drinks %>% summarise(mean = mean(beer_servings), 
                      min = min(beer_servings), 
                      max = max(beer_servings)
-                     )
+                     ) 
 
 # happiness
 happiness <- c(5, 4, 3, 4, 5, 3, 2, 5, 3, 2, 1, 4, 5, 3, 4, 4, 5, 4, 2, 1, 4, 5,
                4, 3, 2, 4, 4, 5, 4, 3, 2, 1)
 
-happiness <- sort(happiness)
+happiness <- sort(happiness) 
 mean(happiness)
 median(happiness)
 
@@ -73,3 +73,9 @@ temps <- c(31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26)
 mean(temps)
 median(temps)
 
+# measures of variation
+temps_mean <- temps %>% mean()
+temps_diff <- temps - temps_mean
+temps_diff_squared <- temps_diff^2
+avg_temps_diff_squared <- temps_diff_squared %>% mean()
+standard_deviation <- avg_temps_diff_squared %>% sqrt()
