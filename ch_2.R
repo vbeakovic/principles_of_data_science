@@ -79,3 +79,13 @@ temps_diff <- temps - temps_mean
 temps_diff_squared <- temps_diff^2
 avg_temps_diff_squared <- temps_diff_squared %>% mean()
 standard_deviation <- avg_temps_diff_squared %>% sqrt()
+
+
+# geometric mean for ratio levels  variables
+num_items <- length(temps)
+product <- 1
+for (i in seq_along(temps)) {
+        product = product * temps[i]
+}
+geometric_mean <- product ^ (1 / num_items)
+geometric_mean
