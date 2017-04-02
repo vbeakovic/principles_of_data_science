@@ -4,6 +4,7 @@ library(stringr)
 library(tidyr)
 library(readr)
 library(RCurl)
+library(purrr)
 
 #### Tweet analysis ###
 tweet <- "This Wednesday morn , are you early to rise? Then look East. The Crescent Moon joins Venus
@@ -87,5 +88,9 @@ product <- 1
 for (i in seq_along(temps)) {
         product = product * temps[i]
 }
+
+
 geometric_mean <- product ^ (1 / num_items)
 geometric_mean
+
+(reduce(temps, `*`))^(1/length(temps))
