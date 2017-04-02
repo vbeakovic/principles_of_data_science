@@ -66,3 +66,10 @@ happiness <- c(5, 4, 3, 4, 5, 3, 2, 5, 3, 2, 1, 4, 5, 3, 4, 4, 5, 4, 2, 1, 4, 5,
 happiness <- sort(happiness)
 mean(happiness)
 median(happiness)
+
+# temperature of the fridge
+temps <- c(31, 32, 32, 31, 28, 29, 31, 38, 32, 31, 30, 29, 30, 31, 26)
+
+mean(temps)
+median(temps)
+
