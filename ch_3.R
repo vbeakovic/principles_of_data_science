@@ -39,3 +39,11 @@ yelp_raw_data %>% select(review_id) %>%
                   top = names(table(yelp_raw_data$review_id)[which.max(table(yelp_raw_data$review_id))]),
                   freq = max(table(yelp_raw_data$review_id))
         )
+
+# exploring the text column
+yelp_raw_data %>% select(text) %>% 
+        summarise(count = n(), 
+                  uni = length(unique(text)), 
+                  top = names(table(yelp_raw_data$text)[which.max(table(yelp_raw_data$text))]),
+                  freq = max(table(yelp_raw_data$text))
+        )
