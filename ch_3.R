@@ -115,4 +115,18 @@ titanic %>% summarise(
         Age = sum(is.na(Age))
 )
 
-titanic <- titanic %>% mutate_if(is.na, mean, na.rm = TRUE)
+titanic$Age[is.na(titanic$Age)] <- mean(titanic$Age, na.rm = TRUE)
+
+titanic %>% summarise(
+        Survived = sum(is.na(Survived)),
+        PClass = sum(is.na(PClass)),
+        Name = sum(is.na(Name)),
+        Sex = sum(is.na(Sex)),
+        Age = sum(is.na(Age))
+)
+
+head(titanic)
+
+# Average age per Sex
+titanic %>% group_by(Sex) %>% 
+        summarise(age_avg = mean(Age))
