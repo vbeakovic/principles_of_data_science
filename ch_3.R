@@ -1,6 +1,7 @@
 library(jsonlite)
 library(rjson)
 library(dplyr)
+library(ggplot2)
 
 # read in offical Yelp review set (available at https://www.yelp.com/dataset_challenge)
 yelp_raw_data <- stream_in(file("yelp_academic_dataset_review.json"),pagesize = 10000)
@@ -79,3 +80,14 @@ yelp_raw_data %>% select(user_id) %>%
                   top = names(table(yelp_raw_data$user_id)[which.max(table(yelp_raw_data$user_id))]),
                   freq = max(table(yelp_raw_data$user_id))
         )
+
+# exploring the stars column
+summary(yelp_raw_data$stars)
+yelp_raw_data %>% group_by(stars) %>% 
+        summarise(cnt = n())
+
+yelp_raw_data %>% group_by(stars) %>% 
+        summarise(cnt = n()) %>% 
+        ggplot(aes(x = stars, y = cnt)) + 
+        geom_bar(stat = "identity", fill = "blue")
+
