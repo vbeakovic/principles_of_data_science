@@ -1,8 +1,11 @@
+#### Libraries ####
 library(jsonlite)
 library(rjson)
 library(dplyr)
 library(ggplot2)
+library(readr)
 
+#### Yelp dataset ####
 # read in offical Yelp review set (available at https://www.yelp.com/dataset_challenge)
 yelp_raw_data <- stream_in(file("yelp_academic_dataset_review.json"),pagesize = 10000)
 
@@ -91,3 +94,25 @@ yelp_raw_data %>% group_by(stars) %>%
         ggplot(aes(x = stars, y = cnt)) + 
         geom_bar(stat = "identity", fill = "blue")
 
+#### Titanic dataset ###
+titanic <- read_csv(file = "data/Titanic.csv") %>% select(Survived, PClass, Name, Sex, Age)
+head(titanic)
+
+# convert Sex column to numeric
+titanic$Sex <- ifelse(titanic$Sex == "female", 1, 0)
+titanic$Sex
+
+# summary
+summary(titanic)
+
+sum(is.na(titanic))
+
+titanic %>% summarise(
+        Survived = sum(is.na(Survived)),
+        PClass = sum(is.na(PClass)),
+        Name = sum(is.na(Name)),
+        Sex = sum(is.na(Sex)),
+        Age = sum(is.na(Age))
+)
+
+titanic <- titanic %>% mutate_if(is.na, mean, na.rm = TRUE)
