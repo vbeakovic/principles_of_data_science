@@ -63,3 +63,19 @@ duplicate_texts <- unique(duplicate$text)
 duplicate_texts_logical <- yelp_raw_data$text %in% duplicate_texts
 sum(duplicate_texts_logical)
 filtered_data_frame <- yelp_raw_data[duplicate_texts_logical, ]
+
+# exploring the type column
+yelp_raw_data %>% select(type) %>% 
+        summarise(count = n(), 
+                  uni = length(unique(type)), 
+                  top = names(table(yelp_raw_data$type)[which.max(table(yelp_raw_data$type))]),
+                  freq = max(table(yelp_raw_data$type))
+        )
+
+# exploring the user_id column
+yelp_raw_data %>% select(user_id) %>% 
+        summarise(count = n(), 
+                  uni = length(unique(user_id)), 
+                  top = names(table(yelp_raw_data$user_id)[which.max(table(yelp_raw_data$user_id))]),
+                  freq = max(table(yelp_raw_data$user_id))
+        )
